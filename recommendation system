@@ -1,0 +1,27 @@
+import pandas as pd
+
+# Load the movie dataset
+movies = pd.read_csv('movies[1].csv')
+
+# Define a genre
+input_genre = "Action"  # Replace with your desired genre
+
+# Define a function to create a content-based recommendation system
+def content_based_recommendation(genre, movies, num_recommendations=10):
+    # Create a mask to filter movies with the specified genre
+    mask = movies['genres'].str.contains(genre, case=False)
+
+    # Filter and sort the movies
+    recommended_movies = movies[mask].sort_values(by='genres', ascending=False)
+
+    # Return the top N recommended movies
+    return recommended_movies[['title', 'genres']].head(num_recommendations)
+
+# Get recommendations based on the predefined genre
+recommendations = content_based_recommendation(input_genre, movies)
+
+if not recommendations.empty:
+    print(f"Recommended movies based on the '{input_genre}' genre:")
+    print(recommendations)
+else:
+    print(f"No movies found for the '{input_genre}' genre.")
