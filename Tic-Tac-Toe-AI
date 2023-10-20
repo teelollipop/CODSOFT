@@ -1,0 +1,106 @@
+import random
+
+# Initialize the game board
+board = [' ' for _ in range(9)]
+
+# Function to display the Tic-Tac-Toe board
+def display_board(board):
+    print(f"{board[0]} | {board[1]} | {board[2]}")
+    print("---------")
+    print(f"{board[3]} | {board[4]} | {board[5]}")
+    print("---------")
+    print(f"{board[6]} | {board[7]} | {board[8]}")
+
+# Function to check if the board is full
+def is_board_full(board):
+    return ' ' not in board
+
+# Function to check if a player has won
+def check_win(board, player):
+    win_combinations = [
+        [0, 1, 2], [3, 4, 5], [6, 7, 8],  # Rows
+        [0, 3, 6], [1, 4, 7], [2, 5, 8],  # Columns
+        [0, 4, 8], [2, 4, 6]  # Diagonals
+    ]
+    for combo in win_combinations:
+        if all(board[i] == player for i in combo):
+            return True
+    return False
+
+# Function to get available moves
+def get_available_moves(board):
+    return [i for i, x in enumerate(board) if x == ' ']
+
+# Minimax function for AI's move
+def minimax(board, depth, is_maximizing):
+    if check_win(board, 'X'):
+        return -1
+    if check_win(board, 'O'):
+        return 1
+    if is_board_full(board):
+        return 0
+
+    if is_maximizing:
+        best_score = -float('inf')
+        for move in get_available_moves(board):
+            board[move] = 'O'
+            score = minimax(board, depth + 1, False)
+            board[move] = ' '
+            best_score = max(score, best_score)
+        return best_score
+    else:
+        best_score = float('inf')
+        for move in get_available_moves(board):
+            board[move] = 'X'
+            score = minimax(board, depth + 1, True)
+            board[move] = ' '
+            best_score = min(score, best_score)
+        return best_score
+
+# AI's move using Minimax
+def ai_move(board):
+    best_score = -float('inf')
+    best_move = None
+    for move in get_available_moves(board):
+        board[move] = 'O'
+        score = minimax(board, 0, False)
+        board[move] = ' '
+        if score > best_score:
+            best_score = score
+            best_move = move
+    board[best_move] = 'O'
+
+# Main game loop
+while True:
+    display_board(board)
+    
+    # Player's move
+    player_move = int(input("Enter your move (0-8): "))
+    if board[player_move] == ' ':
+        board[player_move] = 'X'
+    else:
+        print("Invalid move. Try again.")
+        continue
+
+    if check_win(board, 'X'):
+        display_board(board)
+        print("You win! Congratulations!")
+        break
+
+    if is_board_full(board):
+        display_board(board)
+        print("It's a draw!")
+        break
+
+    # AI's move
+    ai_move(board)
+    
+    if check_win(board, 'O'):
+        display_board(board)
+        print("AI wins! Better luck next time.")
+        break
+
+    if is_board_full(board):
+        display_board(board)
+        print("It's a draw!")
+        break
